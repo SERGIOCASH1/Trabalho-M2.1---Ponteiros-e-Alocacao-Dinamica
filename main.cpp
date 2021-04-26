@@ -2,6 +2,7 @@
 // Acadêmico: Sérgio Venturi Pereira
 
 #include <iostream>
+#include <time.h>
 
 struct Inimigos {
     std::string nome;
@@ -11,55 +12,39 @@ struct Inimigos {
 struct Bloco {
     bool bloqueado;
     bool contemInimigo;
-    Inimigos inimigo;
+    Inimigos *inimigo;
 };
 
 struct Mapa {
     int altura;
     int largura;
-    Bloco blocoMapa[10][10];
+    Bloco **blocoMapa;
 };
 
 struct Fase {
     std::string nome;
     Mapa mapaFase;
-    int numInimigos;
-    Inimigos vetorInimigos[10];
+    int x;
+    int *numInimigos = &x;
+    Inimigos* inimigoFase = new Inimigos[*numInimigos];
 };
 
-Mapa criarMapa(int altura, int largura) {
-    Mapa teste;
-    int C = 10;
-    int L = 10;
-    int i, j;
-    int matriz[10][10] = {0};
+Mapa criarMapa(int alturaMapa, int larguraMapa) {
+    Mapa mapa;
 
-    std::cout << "\t\t\t\t\t\t         ";      
-    for(i=0; i<L; i++){
-      std::cout << "_ ";
-    }
+    mapa.altura = alturaMapa;
+    mapa.largura = larguraMapa;
+    
+    mapa.blocoMapa = new Bloco * [alturaMapa];
 
-    std::cout << std::endl;
-    for(i=0; i<L; i++){
-			std::cout << "\t\t\t\t\t\t       " << i << "|" << "";
-        for(j=0; j<C; j++){
-        if (matriz[i][j] == 1){
-        if(matriz[i][j] == 9){
-            std::cout << "x ";
-                }else
-                    std::cout << matriz[i][j] << "|";
-            }
-            else
-                std::cout << "_|";
-        }
-        std::cout << std::endl;
-    }
-    return teste;
+    return mapa;
 }
 
 Fase criarFase(int numInimigos, Inimigos* inimigos, int alturaMapa, int larguraMapa) {   
     Fase fasePronta;
-    criarMapa(alturaMapa, larguraMapa);
+
+    fasePronta.mapaFase = criarMapa(alturaMapa, larguraMapa);
+
     return fasePronta;
 
 }
@@ -67,30 +52,39 @@ Fase criarFase(int numInimigos, Inimigos* inimigos, int alturaMapa, int larguraM
 void primeiraFase() {
     Fase primeira;
 
-    primeira.numInimigos = 5;
-    primeira.mapaFase.altura = 100;
-    primeira.mapaFase.largura = 100;
+    *primeira.numInimigos = 5;
+
+    primeira.mapaFase.altura = 1000;
+    primeira.mapaFase.largura = 1000;
     primeira.nome = "O Condado";
 
-    primeira.vetorInimigos[0].nome = "Orc";
-    primeira.vetorInimigos[1].nome = "Outro Orc";
-    primeira.vetorInimigos[2].nome = "Mestre Orc";
-    primeira.vetorInimigos[3].nome = "Doutor Orc";
-    primeira.vetorInimigos[4].nome = "Chefe Orc";
+
+    primeira.inimigoFase[0].nome = "Orc";
+    primeira.inimigoFase[1].nome = "Outro Orc";
+    primeira.inimigoFase[2].nome = "Mestre Orc";
+    primeira.inimigoFase[3].nome = "Doutor Orc";
+    primeira.inimigoFase[4].nome = "Chefe Orc";
  
 
-    for (int i = 0; i < 5; i++) {
-        primeira.vetorInimigos[i].vida = 100 + (rand() % 100);
+    for (int i = 0; i < *primeira.numInimigos; i++) {
+        primeira.inimigoFase[i].vida = 100 + (rand() % 100);
     }
 
-    criarFase(primeira.numInimigos, primeira.vetorInimigos, primeira.mapaFase.altura, primeira.mapaFase.largura);
+    criarFase(*primeira.numInimigos, primeira.inimigoFase, primeira.mapaFase.altura, primeira.mapaFase.largura);
+    
+    std::cout << "----------Primeira Fase------------" << std::endl << "\t\t" << primeira.nome << std::endl;
+
+
+
+    delete[] primeira.inimigoFase;
+    primeira.inimigoFase = NULL;
 }
 
 
 int main()
 {
     primeiraFase();
-
+    
 
 }
 
